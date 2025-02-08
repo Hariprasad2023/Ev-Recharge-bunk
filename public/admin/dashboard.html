@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EV Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+</head>
+<body class="bg-gray-100 flex">
+
+    <!-- Sidebar Navigation -->
+    <aside class="w-64 bg-indigo-700 text-white min-h-screen p-4">
+        <h1 class="text-xl font-bold mb-4">EV Admin</h1>
+        <nav>
+            <ul>
+                <li class="mb-2"><a href="#" id="dashboardLink" class="block p-2 hover:bg-indigo-600">Dashboard</a></li>
+                <li class="mb-2"><a href="#" id="addStationLink" class="block p-2 hover:bg-indigo-600">Create EV Bunk</a></li>
+                <li class="mb-2"><a href="#" id="manageStationsLink" class="block p-2 hover:bg-indigo-600">Manage Bunks</a></li>
+                <li class="mb-2"><a href="#" id="manageRechargeLink" class="block p-2 hover:bg-indigo-600">Manage Recharge</a></li>
+                <li class="mb-2"><button id="logoutBtn" class="w-full bg-red-500 p-2 rounded">Logout</button></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6">
+
+        <!-- Dashboard -->
+        <section id="dashboardSection">
+            <h2 class="text-2xl font-bold">Welcome to EV Bunk Admin Panel</h2>
+            <div id="map" class="w-full h-96 bg-gray-300 rounded mt-4"></div>
+
+        </section>
+
+        <!-- Add New Station Form -->
+        <section id="addStationSection" class="hidden">
+            <h2 class="text-2xl font-bold">Create New EV Bunk</h2>
+            <div class="bg-white p-4 rounded shadow mt-4">
+                <input type="text" id="stationName" placeholder="Station Name" class="border p-2 w-full mb-2">
+                <input type="text" id="stationAddress" placeholder="Address" class="border p-2 w-full mb-2">
+                <input type="number" id="slotsAvailable" placeholder="Slots Available" class="border p-2 w-full mb-2">
+                <input type="text" id="latitude" placeholder="Latitude" class="border p-2 w-full mb-2">
+                <input type="text" id="longitude" placeholder="Longitude" class="border p-2 w-full mb-2">
+                <button id="addStationBtn" class="bg-green-500 px-4 py-2 text-white rounded">Add Station</button>
+            </div>
+        </section>
+
+        <!-- Manage Bunks Section -->
+        <section>
+            <div id="manageStationsSection" class="hidden">
+                <h2 class="text-2xl font-bold">Manage EV Bunks</h2>
+                <table class="w-full border-collapse border border-gray-300 mt-4">
+                    <thead>
+                        <tr class="bg-gray-200">
+                            <th class="border border-gray-300 p-2">Station Name</th>
+                            <th class="border border-gray-300 p-2">Address</th>
+                            <th class="border border-gray-300 p-2">Slots Available</th>
+                            <th class="border border-gray-300 p-2">Latitude</th>
+                            <th class="border border-gray-300 p-2">Longitude</th>
+                            <th class="border border-gray-300 p-2">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stationListAdmin"></tbody>
+                </table>
+            </div>
+        </section>
+            
+
+        <!-- Manage Recharge Section -->
+        <section id="manageRechargeSection" class="hidden">
+            <div class="mt-8 bg-white p-4 rounded shadow">
+                <h3 class="text-lg font-semibold">Manage Recharges</h3>
+            
+                <!-- Recharge Form -->
+                <div class="mb-4">
+                    <input type="text" id="userId" placeholder="User ID" class="border p-2 w-full mb-2">
+                    <input type="number" id="rechargeAmount" placeholder="Amount" class="border p-2 w-full mb-2">
+                    <select id="stationId" class="border p-2 w-full mb-2">
+                        <option value="">Select Charging Station</option>
+                    </select>
+                    
+                    <select id="paymentMethod" class="border p-2 w-full mb-2">
+                        <option value="UPI">UPI</option>
+                        <option value="Credit Card">Credit Card</option>
+                        <option value="Debit Card">Debit Card</option>
+                    </select>
+                    <button id="addRechargeBtn" class="bg-blue-500 px-4 py-2 text-white rounded">Add Recharge</button>
+                </div>
+            
+                <!-- Recharges Table -->
+                <table class="w-full border-collapse border border-gray-300">
+                    <thead>
+                        <tr class="bg-gray-200">
+                            <th class="border border-gray-300 p-2">User ID</th>
+                            <th class="border border-gray-300 p-2">Amount</th>
+                            <th class="border border-gray-300 p-2">Station ID</th>
+                            <th class="border border-gray-300 p-2">Status</th>
+                            <th class="border border-gray-300 p-2">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rechargeList"></tbody>
+                </table>
+            </div>
+            
+            
+        </section>
+
+    </main>
+
+    <!-- Leaflet & Firebase -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script type="module" src="dashboard.js"></script>
+
+</body>
+</html> 

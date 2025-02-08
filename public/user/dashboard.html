@@ -4,34 +4,182 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Dashboard | EV Bunk</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <link rel="stylesheet" href="style.css">
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDje6FhlWbiJZpgvmqTz5IcFuwt8sguhXk&libraries=places&callback=initMap">
-</script>
+    <!-- Modern Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        :root {
+            --primary-color: #2ecc71;
+            --secondary-color: #27ae60;
+            --accent-color: #e74c3c;
+        }
+
+        body {
+            background: #f8f9fa;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        .container {
+            max-width: 1200px;
+            padding: 2rem 1rem;
+        }
+
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .user-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: -80px auto 2rem;
+            width: 90%;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 120px;
+            height: 120px;
+            border: 3px solid white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            margin-top: -80px;
+        }
+
+        #map {
+            height: 500px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin: 2rem 0;
+            border: 3px solid white;
+        }
+
+        .charging-slots {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .slot-card {
+            display: flex;
+            align-items: center;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            background: #f8f9fa;
+            border-radius: 10px;
+            transition: transform 0.2s;
+        }
+
+        .slot-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .slot-status {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            margin-right: 1rem;
+        }
+
+        .available { background: var(--primary-color); }
+        .occupied { background: var(--accent-color); }
+
+        .search-bar {
+            position: relative;
+            margin: 2rem 0;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        #searchBox {
+            padding-left: 40px;
+            height: 50px;
+            border-radius: 25px;
+            border: 2px solid #eee;
+        }
+
+        .btn-custom {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 25px;
+            transition: all 0.3s;
+        }
+
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            #map {
+                height: 300px;
+            }
+        }
+    </style>
 </head>
 <body>
-
     <div class="container">
-        <h2 class="text-center">Welcome to EV Charging Dashboard</h2>
-        
-        <div class="panel panel-default">
-            <div class="panel-body text-center">
-                <img id="userPhoto" src="default-avatar.png" class="img-circle" width="100" height="100" alt="User Photo">
-                <h3 id="userName">Loading...</h3>
-                <p id="userEmail"></p>
-                <button id="logoutBtn" class="btn btn-danger">Logout</button>
-            </div>
+        <div class="dashboard-header">
+            <h1 class="display-5 fw-bold">EV Charging Dashboard</h1>
+            <p class="lead">Find and manage charging stations in real-time</p>
         </div>
 
-        <h3>Search Nearby Charging Stations</h3>
-        <input type="text" id="searchBox" class="form-control" placeholder="Enter location...">
-        <div id="map" style="height: 400px; width: 100%; margin-top: 10px;"></div>
+        <div class="user-card text-center">
+            <img id="userPhoto" src="default-avatar.png" class="user-avatar img-fluid rounded-circle" alt="User Photo">
+            <h2 id="userName" class="mt-3 mb-2 fw-bold">Loading...</h2>
+            <p id="userEmail" class="text-muted"></p>
+            <button id="logoutBtn" class="btn btn-custom">Logout <i class="fas fa-sign-out-alt ms-2"></i></button>
+        </div>
 
-        <h3>Available Charging Slots</h3>
-        <ul id="slotList" class="list-group"></ul>
+        <div class="search-bar">
+            <i class="fas fa-search search-icon"></i>
+            <input id="searchBox" class="form-control" type="text" placeholder="Search for charging stations...">
+        </div>
+
+        <div id="map"></div>
+
+        <div class="charging-slots">
+            <h3 class="mb-4 fw-bold"><i class="fas fa-charging-station me-2"></i>Available Charging Slots</h3>
+            <div id="slotList">
+                <!-- Dynamic content will be loaded here -->
+                <div class="slot-card">
+                    <div class="slot-status available"></div>
+                    <div class="flex-grow-1">
+                        <h5 class="mb-1">Station A1</h5>
+                        <p class="mb-0 text-muted">Fast Charging • 150kW</p>
+                    </div>
+                    <button class="btn btn-sm btn-outline-success">Book Now</button>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script type="module" src="dashboard.js"></script>
-
 </body>
 </html>
