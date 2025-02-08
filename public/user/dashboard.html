@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard | EV Bunk</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDje6FhlWbiJZpgvmqTz5IcFuwt8sguhXk&libraries=places&callback=initMap">
+</script>
+</head>
+<body>
+
+    <div class="container">
+        <h2 class="text-center">Welcome to EV Charging Dashboard</h2>
+        
+        <div class="panel panel-default">
+            <div class="panel-body text-center">
+                <img id="userPhoto" src="default-avatar.png" class="img-circle" width="100" height="100" alt="User Photo">
+                <h3 id="userName">Loading...</h3>
+                <p id="userEmail"></p>
+                <button id="logoutBtn" class="btn btn-danger">Logout</button>
+            </div>
+        </div>
+
+        <h3>Search Nearby Charging Stations</h3>
+        <input type="text" id="searchBox" class="form-control" placeholder="Enter location...">
+        <div id="map" style="height: 400px; width: 100%; margin-top: 10px;"></div>
+
+        <h3>Available Charging Slots</h3>
+        <ul id="slotList" class="list-group"></ul>
+    </div>
+
+    <script type="module" src="dashboard.js"></script>
+
+</body>
+</html>
