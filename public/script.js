@@ -1,6 +1,7 @@
-// script.js
-
 import { auth, db, storage } from './firebase.js';
+import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-storage.js";
+import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
 // Form submission handler
 document.querySelector('form').addEventListener('submit', async (e) => {
@@ -22,35 +23,31 @@ document.querySelector('form').addEventListener('submit', async (e) => {
 
   try {
     // Create user account
-    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-    const user = userCredential.user;
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;  
+    console.log("User created:", user);
 
     // Upload avatar if exists
     let avatarURL = '';
     if (avatarFile) {
-      const storageRef = storage.ref(`avatars/${user.uid}/${avatarFile.name}`);
-      const snapshot = await storageRef.put(avatarFile);
-      avatarURL = await snapshot.ref.getDownloadURL();
+      const storageRef = ref(storage, `avatars/${user.uid}/${avatarFile.name}`);
+      await uploadBytes(storageRef, avatarFile);
+      avatarURL = await getDownloadURL(storageRef);
     }
 
-    // Update user profile
-    await user.updateProfile({
-      displayName: fullName,
-      photoURL: avatarURL
-    });
-
     // Save additional user data to Firestore
-    await db.collection('users').doc(user.uid).set({
+    await setDoc(doc(db, "users", user.uid), {
       username: username,
       fullName: fullName,
       email: email,
       avatarURL: avatarURL,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      createdAt: serverTimestamp()
     });
 
-   
+    alert('User registered successfully!');
     window.location.href = 'login.html';
   } catch (error) {
     alert('Error: ' + error.message);
+    console.error("Firebase Error:", error);
   }
 });
